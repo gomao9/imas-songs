@@ -2,6 +2,7 @@ require 'sinatra'
 require 'nokogiri'
 require 'open-uri'
 require 'json'
+require 'unicode'
 
 URL ='http://imas-db.jp/song/detail/'
 
@@ -14,6 +15,8 @@ helpers do
     html = open(URL).read
     doc = Nokogiri::HTML.parse(html)
     songs = doc.css('div.section > ul > li').map(&:text).to_a
-    songs.select{|song| song.include? keyword}
+    songs.select do |song|
+      Unicode::nfkc(song).include?  Unicode::nfkc(keyword)
+    end
   end
 end
